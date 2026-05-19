@@ -1,7 +1,7 @@
 # CLAUDE.MD — Climate Change and Agriculture (Farmland Transactions)
 
 **Project:** Climate Change and Agriculture: Evidence from Farmland Transactions
-**Institution:** [YOUR INSTITUTION]
+**Institution:** Korea Rural Economic Institute
 **Target journal:** Journal of Environmental Economics and Management (JEEM)
 **Tooling:** LaTeX + Stata
 **Branch:** main

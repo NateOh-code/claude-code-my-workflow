@@ -16,11 +16,56 @@ Data/
 
 ## Project data folder
 
-The user maintains the raw data in a folder named **`climate on agriculture`** on their machine (exact path TBD — fill in below once confirmed). Workflow conventions:
+The raw data lives outside the repo at:
 
-- **Symlink or copy into `Data/raw/`**: either symlink `Data/raw/source -> /path/to/climate on agriculture/source` (preserves single source of truth) or copy the files in (simpler, costs disk space). Stata's `profile.do` uses `$DATA_RAW = $PROJ_ROOT/Data/raw` — anything reachable from there works.
-- **Never check the folder into git** — `Data/raw/*` is gitignored.
-- Once the exact host path is known, replace `[path-to-folder]` in the provenance table below.
+```
+C:\Users\user\Documents\my-project\climate on agriculture\
+```
+
+Total size: ~11 GB. Files present (as of 2026-05-19):
+
+| File | Size | Description (working inference) |
+|---|---|---|
+| `D2_land_transaction_clean.dta` | 4.3 GB | Cleaned land transaction panel |
+| `D2_land_transaction_climate.dta` | 5.3 GB | Land transactions joined with climate exposure |
+| `D2_repeated_sales.dta` | 2.1 GB | Repeated-sales subsample (within-parcel ID) |
+| `D3_land_transaction_city_final.dta` | 6.3 MB | City-level aggregate |
+| `climate_annual.dta` | 192 KB | Annual climate covariates |
+
+Naming suggests upstream `D1_*` raw extracts exist elsewhere (likely on a network share or external drive); D2/D3 are intermediate derivatives produced offline. Confirm + document upstream provenance before submission.
+
+### Wiring to Stata
+
+The data is too large to copy or commit. Three patterns, pick one:
+
+**Option 1 — point `$DATA_RAW` directly at the source (recommended for single-machine work).** In `Stata/profile.do` (or a gitignored `Stata/profile.local.do` if multi-machine), override:
+
+```stata
+global DATA_RAW "C:/Users/user/Documents/my-project/climate on agriculture"
+```
+
+`profile.do` currently defaults `$DATA_RAW = $PROJ_ROOT/Data/raw`; the override above bypasses `Data/raw/` entirely. Cleanest, no filesystem changes.
+
+**Option 2 — Windows directory junction.** From a Windows shell (cmd, not Git Bash), at the repo root:
+
+```cmd
+rmdir Data\raw
+mklink /J Data\raw "C:\Users\user\Documents\my-project\climate on agriculture"
+```
+
+After this, `Data/raw/` appears to contain the .dta files but they physically live in the original folder. `profile.do` works unchanged. Junctions on Windows do not require admin rights. Caveat: `Data/raw/.gitkeep` must be deleted first; re-add it later only if you remove the junction.
+
+**Option 3 — symlink (Git Bash, requires Windows Developer Mode or admin).** Same effect as Option 2 but cross-platform syntax:
+
+```bash
+rm -rf Data/raw && ln -s "C:/Users/user/Documents/my-project/climate on agriculture" Data/raw
+```
+
+Not recommended on Windows without Developer Mode — silently falls back to a junk hard-link in some configurations.
+
+### Privacy guard
+
+Raw transaction data is restricted (Korean land transaction records, KREI internal). Even if linked into `Data/raw/`, the `.gitignore` rule (`Data/raw/*` with whitelist for `.gitkeep` only) prevents accidental commits. **Never** add a `!Data/raw/<filename>` whitelist exception for any actual data file.
 
 ## Documenting sources
 
