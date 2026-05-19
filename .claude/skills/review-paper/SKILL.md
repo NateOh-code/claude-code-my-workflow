@@ -79,9 +79,10 @@ This mode is materially different from `--adversarial`: adversarial runs the sam
 
 6. **Save to** `quality_reports/paper_review_[sanitized_name]_round[N].md` (N=1 in default mode; N increments in adversarial mode).
 
-6b. **Cross-artifact integration.** Unless `$ARGUMENTS` contains `--no-cross-artifact`, and if the manuscript references analysis scripts (detected via `\input{scripts/...}`, `%% source:` comments, or matching `scripts/R/_outputs/` filenames), auto-invoke:
-   - `/review-r` on each referenced script (forked subagent, results to `quality_reports/cross_artifact_[paper]/review_r_*.md`)
-   - `/audit-reproducibility` on the manuscript + outputs dir (results to `quality_reports/cross_artifact_[paper]/reproducibility.md`)
+6b. **Cross-artifact integration.** Unless `$ARGUMENTS` contains `--no-cross-artifact`, and if the manuscript references analysis scripts (detected via `\input{scripts/...}`, `\input{Tables/...}`, `\input{../Tables/...}`, `%% source:` comments, or matching `scripts/R/_outputs/` / `Tables/` filenames), auto-invoke:
+   - `/review-r` on each referenced `.R` file (forked subagent, results to `quality_reports/cross_artifact_[paper]/review_r_*.md`)
+   - `/review-stata` on each referenced `.do` / `.ado` file (forked subagent, results to `quality_reports/cross_artifact_[paper]/review_stata_*.md`)
+   - `/audit-reproducibility` on the manuscript + outputs dir (results to `quality_reports/cross_artifact_[paper]/reproducibility.md`). The outputs dir is auto-detected — `scripts/R/_outputs/` for R pipelines, `Tables/` for Stata + LaTeX layouts.
 
    Merge critical cross-artifact findings (code bug invalidates paper claim, reproducibility FAIL) into a new "Cross-Artifact Findings" section at the top of the paper review report. See [`.claude/rules/cross-artifact-review.md`](../../rules/cross-artifact-review.md) for the full protocol.
 

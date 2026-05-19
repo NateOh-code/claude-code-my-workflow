@@ -27,10 +27,11 @@ Applies when `/review-paper` runs on a manuscript that references analysis scrip
 
 Detection signals:
 
-- `\input{scripts/R/...}` or `\input{tables/...}`
-- `%% source: scripts/R/03_analyze.R` comments
-- Numeric claims in text (ATT, coefficients, N, p-values) **combined with** a sibling `scripts/R/` / `scripts/stata/` / `scripts/python/` directory
-- Table labels in the paper that match filenames under `scripts/*/\_outputs/`
+- `\input{scripts/R/...}`, `\input{tables/...}`, `\input{Tables/...}`, `\input{../Tables/...}` (the last two match the Stata + LaTeX layout where Stata writes `esttab` output to a sibling `Tables/` directory).
+- `%% source: scripts/R/03_analyze.R` or `%% source: Stata/do/04_analyze.do` comments.
+- Numeric claims in text (ATT, coefficients, N, p-values) **combined with** a sibling `scripts/R/` / `scripts/stata/` / `scripts/python/` / `Stata/do/` directory.
+- Table labels in the paper that match filenames under `scripts/*/\_outputs/` or `Tables/tab_*.tex`.
+- `\includegraphics{Figures/fig_*.pdf}` or `\includegraphics{../Figures/...}` where `Figures/` is a sibling of `Stata/` (figure was produced by `graph export` in a do-file).
 
 Detection is intentionally conservative — a theory paper with no code should not trigger the protocol, even if it lives in a repo that has scripts for other work.
 
@@ -48,13 +49,27 @@ Scan the manuscript for:
 
 Build a list of scripts that produced content in this paper.
 
-### 2. Auto-invoke `/review-r`
+### 2. Auto-invoke the code reviewer (dispatched by extension)
 
-For each identified R script, launch `/review-r` in a forked subagent (`context: fork`). Save reports to `quality_reports/cross_artifact_[paper]/review_r_[script].md`.
+For each identified script, launch the matching code-review skill in a forked subagent (`context: fork`):
+
+| File extension | Skill | Report path |
+|---|---|---|
+| `.R` | [`/review-r`](../skills/review-r/SKILL.md) | `quality_reports/cross_artifact_[paper]/review_r_[script].md` |
+| `.do`, `.ado` | [`/review-stata`](../skills/review-stata/SKILL.md) | `quality_reports/cross_artifact_[paper]/review_stata_[script].md` |
+| `.py` (future) | (no skill yet — fall back to manual flag in the report) | — |
+
+If a paper references both R and Stata scripts (uncommon but possible — e.g., R for figures, Stata for regressions), invoke both skills in parallel.
 
 ### 3. Auto-invoke `/audit-reproducibility`
 
-Run `/audit-reproducibility $manuscript scripts/R/_outputs/` once. Save to `quality_reports/cross_artifact_[paper]/reproducibility.md`.
+Run `/audit-reproducibility $manuscript $OUTPUTS_DIR` once, where `$OUTPUTS_DIR` is auto-detected:
+
+- If the paper `\input{}`s files from `scripts/R/_outputs/`, point there.
+- If the paper `\input{}`s files from `Tables/` (Stata + LaTeX layout), point there.
+- If both, pass both as arguments (the skill globs across the union).
+
+Save to `quality_reports/cross_artifact_[paper]/reproducibility.md`.
 
 ### 4. Surface cross-artifact findings
 
@@ -91,9 +106,11 @@ In the paper review report, add a new section:
 ## Cross-references
 
 - `.claude/skills/review-paper/SKILL.md` — the orchestrator.
-- `.claude/skills/review-r/SKILL.md` — code reviewer.
-- `.claude/skills/audit-reproducibility/SKILL.md` — numeric claims verifier.
+- `.claude/skills/review-r/SKILL.md` — R code reviewer.
+- `.claude/skills/review-stata/SKILL.md` — Stata do-file reviewer.
+- `.claude/skills/audit-reproducibility/SKILL.md` — numeric claims verifier (R outputs, Stata `.tex`/`.log`/`.csv` outputs, Python outputs).
 - `.claude/rules/replication-protocol.md` — tolerance contract.
+- `.claude/rules/stata-code-conventions.md` — Stata-side conventions referenced by `stata-reviewer`.
 
 ## What this rule does NOT require
 

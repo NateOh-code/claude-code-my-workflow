@@ -79,3 +79,42 @@ scripts/R/_outputs/
 # Output artifacts — uncomment lines below based on your preference
 # *.rds
 # output/**/*.rds
+
+# =============================================================================
+# Stata
+# =============================================================================
+
+# Session logs — large, machine-specific; profile.do writes them to Stata/log/.
+Stata/log/*.log
+Stata/log/*.smcl
+!Stata/log/.gitkeep
+
+# Stata temp files
+*.tmp
+__*.dta
+*.~stata
+
+# Stata package code lives in Stata/ado/ (project-local PERSONAL dir).
+# Keep the directory itself; the package contents are reinstalled from
+# `do install_packages.do` so don't commit the package binaries.
+Stata/ado/*
+!Stata/ado/.gitkeep
+
+# =============================================================================
+# Data — raw is restricted/proprietary by default; derived is opt-in commit
+# =============================================================================
+
+# Raw data: NEVER commit. Add documented sources to Data/README.md.
+Data/raw/*
+!Data/raw/.gitkeep
+
+# Derived data: commit small files (<25MB each, <100MB total) deliberately.
+# Default-ignore .dta and large CSVs; whitelist specific files you want in
+# the repo via `!Data/derived/<filename>` exceptions below.
+Data/derived/*.dta
+Data/derived/*.csv
+Data/derived/*.parquet
+!Data/derived/.gitkeep
+# Example: uncomment a line to commit a specific derived file
+# !Data/derived/county_panel_clean.dta
+
