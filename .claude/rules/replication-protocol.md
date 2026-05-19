@@ -45,8 +45,24 @@ Before writing any R code:
 |-------|---|------|
 | `reg y x, cluster(id)` | `feols(y ~ x, cluster = ~id)` | Stata clusters df-adjust differently from some R packages |
 | `areg y x, absorb(id)` | `feols(y ~ x \| id)` | Check demeaning method matches |
+| `reghdfe y x, absorb(id year) cluster(id)` | `feols(y ~ x \| id + year, cluster = ~id)` | Confirm `reghdfe` and `feols` agree on small-sample correction (Stata: `dof()` option; R: `ssc=ssc()`) |
+| `ivreghdfe y (x = z), absorb(id) cluster(id)` | `feols(y ~ 1 \| id \| x ~ z, cluster = ~id)` | First-stage F definitions diverge (Kleibergen-Paap vs effective F); pin whichever the original paper reports |
+| `csdid y, ivar(id) time(t) gvar(g)` | `did::att_gt(yname, tname, idname, gname, ...)` | Default control group differs (`csdid`: never-treated; `did::att_gt`: not-yet-treated) — set explicitly |
 | `probit` for PS | `glm(family=binomial(link="probit"))` | R default logit != Stata default in some commands |
 | `bootstrap, reps(999)` | Depends on method | Match seed, reps, and bootstrap type exactly |
+
+### Stata-to-Stata replication discipline (when both original and ours are Stata)
+
+When the original code AND your code are both Stata, the translation table above is irrelevant — but the following discipline is mandatory:
+
+- **Pin `version`.** Set `version 18` (or whatever pinned version the project uses) at the top of `profile.do`. Without this, future Stata releases can silently change `reghdfe` defaults, `cluster` small-sample corrections, or `csdid` control-group conventions.
+- **`set type double`.** Stata's default float type causes precision loss on aggregation; the original may have used double silently. Force it.
+- **Same package version.** SSC packages (`reghdfe`, `ivreghdfe`, `csdid`, `did_imputation`, `eventstudyinteract`, `did_multiplegt`) change behavior across versions. Use `ssc copy <pkg>, replace` plus `sysdir set PERSONAL "$ADO"` to pin the package code into the project's `ado/` directory. Document the version in `Stata/README.md`.
+- **Deterministic `bysort`.** Always include a tie-breaking sort variable (`bysort group (id year)`). Stata does not warn on non-deterministic ties.
+- **Match `cluster()` exactly.** A one-way → two-way switch (`cluster(state) → cluster(state year)`) changes the SE in ways that look like a bug. Confirm dimensionality before adjusting.
+- **Match `absorb()` exactly.** Different orderings can produce the same point estimate but different degrees-of-freedom adjustments. The first variable in `absorb()` is treated specially by `reghdfe`.
+- **Match the staggered-DiD estimator.** Vanilla TWFE (`reghdfe y D, absorb(unit time)`) differs from `csdid`, `did_imputation`, `eventstudyinteract`, and `did_multiplegt`. These are not interchangeable under heterogeneous treatment effects (Goodman-Bacon 2021; de Chaisemartin-D'Haultfœuille 2020; Sun-Abraham 2021; Borusyak-Jaravel-Spiess 2024). The original paper's estimator must be reproduced before any extension.
+- **Seed.** `bootstrap, reps(N) seed(S)` — `seed()` argument is mandatory. Match `S` and `N` to the original.
 
 ---
 

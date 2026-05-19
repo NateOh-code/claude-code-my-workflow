@@ -63,10 +63,97 @@ Write the extracted claims to `quality_reports/reproducibility_claims_[manuscrip
 Scan `$1` for corresponding values. Priority order:
 
 1. **`.rds` files** — `readRDS(path)$coef[["treatment"]]` style lookups. Can use `Rscript -e "saveRDS(summary(readRDS(...)), '/tmp/audit.rds')"` to extract.
-2. **`.tex` tables** — parse LaTeX table cells directly; match on column headers + row labels.
+2. **`.tex` tables** (R `modelsummary`, `stargazer`, OR Stata `esttab` output) — parse LaTeX table cells directly; match on column headers + row labels.
 3. **`.csv` summary files** — pandas/readr parse, key-value lookup.
-4. **`.out` / `.log` files** (Stata, regress output) — regex extraction.
+4. **`.out` / `.log` / `.smcl` files** (Stata regress/reghdfe/ivreghdfe/csdid output) — regex extraction; see Stata patterns below.
 5. **`.json`** — direct key lookup.
+
+#### Stata output parsing — concrete patterns
+
+**`esttab` LaTeX fragment (most common).** `esttab` writes one row per variable, with the point estimate, then a row with `(se)` underneath. With `cells("b(fmt(3) star) se(fmt(3) par)")` the output looks like:
+
+```latex
+treatment       & -1.632\sym{***}\\
+                & (0.584)         \\
+ln\_acres       &  0.421\sym{**} \\
+                & (0.183)         \\
+```
+
+Pattern for `(point, se, stars)` per variable name:
+
+```python
+import re
+pat = re.compile(
+    r"^(?P<var>[A-Za-z_\\][\w\\]*)\s*&\s*"
+    r"(?P<b>-?\d+(?:\.\d+)?)"
+    r"(?:\\sym\{(?P<stars>\**)\})?\s*\\\\\s*\n"
+    r"\s*&\s*\((?P<se>-?\d+(?:\.\d+)?)\)",
+    re.MULTILINE,
+)
+```
+
+**`reghdfe` log output.** Coefficient table looks like:
+
+```
+        lnvalue |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+    ------------+--------------------------------------------------------------
+      treatment |  -1.632142    .583512    -2.80   0.005    -2.776147   -.488137
+```
+
+Pattern (per variable):
+
+```python
+pat = re.compile(
+    r"^\s*(?P<var>\S+)\s*\|\s*"
+    r"(?P<b>-?\d+\.\d+)\s+"
+    r"(?P<se>\d+\.\d+)\s+"
+    r"(?P<t>-?\d+\.\d+)\s+"
+    r"(?P<p>\d+\.\d+)",
+    re.MULTILINE,
+)
+```
+
+**`csdid` event-study output.** ATT(g,t) point estimates and SEs:
+
+```
+   ATT by group and time:
+        Group       Time         ATT       Std.Err
+         2010       2010       -.124         .045
+         2010       2011       -.196         .062
+```
+
+Pattern:
+
+```python
+pat = re.compile(
+    r"^\s*(?P<g>\d{4})\s+(?P<t>\d{4})\s+"
+    r"(?P<att>-?\.\d+|-?\d+\.\d+)\s+"
+    r"(?P<se>\.\d+|\d+\.\d+)",
+    re.MULTILINE,
+)
+```
+
+**`ivreghdfe` first-stage F.** Look for the Kleibergen-Paap rk Wald statistic:
+
+```
+Kleibergen-Paap rk Wald F statistic................     23.45
+```
+
+Pattern:
+
+```python
+pat = re.compile(r"Kleibergen-Paap rk Wald F statistic\.+\s+(?P<F>\d+\.\d+)")
+```
+
+**Project-emitted `_b[]` / `_se[]` CSVs (recommended pattern).** If a do-file appends `_b[var]` and `_se[var]` to a `.csv` summary explicitly:
+
+```stata
+file open out using "$TABLES/_audit_summary.csv", write append
+file write out "main, treatment, " %12.6f (_b[treatment]) ", " %12.6f (_se[treatment]) _n
+file close out
+```
+
+This gives the cleanest audit path — direct key lookup, no regex.
 
 Record each extracted result:
 

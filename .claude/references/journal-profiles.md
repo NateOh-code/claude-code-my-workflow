@@ -310,6 +310,50 @@ Three flagship general-interest political-science journals. The `paper_type` tax
 
 ---
 
+## Environmental & Resource Economics
+
+The field journal closest to AERE's house style. Adjustments below reflect JEEM's reduced-form-dominant taste, policy orientation, and Elsevier formatting conventions (which differ from AEA on significance stars). See [`discipline-cards.md` → Environmental & Resource Economics](discipline-cards.md) for paper-type frequencies and preregistration norms.
+
+### Journal of Environmental Economics and Management (JEEM)
+
+**Short name:** `JEEM`
+
+**Focus.** Flagship of the Association of Environmental and Resource Economists (AERE) and the leading field outlet for applied environmental and resource economics. Reduced-form-dominant; structural work accepted when motivated by a policy or measurement question. Core topics: climate impacts and adaptation, non-market valuation, pollution regulation, energy economics, natural resource management, conservation, environmental justice. Less sympathetic to pure theory unless it bears directly on environmental policy.
+
+**Bar.** Credible identification + magnitudes that matter for policy + clean writing. The bar on general-interest importance is lower than the top-5 econs, but higher than most specialist outlets — JEEM editors want topics that "an environmental economist anywhere in the world would care about," not narrow geographic case studies without external-validity argument. Acceptance rate roughly 10–15%.
+
+**Domain-referee adjustments.**
+- Contribution 30 → 30 (unchanged — JEEM expects a clear contribution but not the AER-level general-interest bar)
+- External validity 15 → 20 (climate-adaptation work is judged on whether the estimates generalize beyond the sample state/country/decade)
+- Fit 10 → 15 (must be visibly environmental/resource — a clean labor paper with a weather covariate is not a JEEM paper)
+- Substance 20 → 20 (unchanged)
+
+**Methods-referee adjustments.**
+- Identification 35 → 40 (the credibility bar at JEEM is high; weather/climate identification gets extra scrutiny because measurement-and-identification interact)
+- Robustness 15 → 20 (JEEM referees push hard on alternative specifications, alternative climate measures, and adaptation-margin sensitivities)
+- Replication 5 → 10 (JEEM enforces a data-and-code availability policy aligned with the AEA Data Editor model)
+- If paper type is `reduced-form`: keep above adjustments.
+- If paper type is `structural`: Model spec 20 → 25 (motivate the structural choice over reduced-form), Counterfactuals 15 → 20 (the policy counterfactual is the contribution).
+
+**Typical concerns.** Common JEEM referee questions:
+- "Is the climate exposure measure (degree days, growing-season precipitation, drought index) the right one for the outcome, or just the convenient one?"
+- "How do you separate the climate effect from omitted soil quality, irrigation infrastructure, and crop-mix endogeneity?"
+- "Does the identification argument hold under farmer adaptation? If farmers re-optimize, what does your estimate represent — short-run damage, long-run adapted value, or a weighted average?"
+- "What's the magnitude in policy units (\$/acre, \% of land value, share of agricultural GDP), and how does it compare to the prior literature (Mendelsohn-Nordhaus-Shaw; Schlenker-Hanemann-Fisher; Deschênes-Greenstone; Burke-Emerick)?"
+- "Does the result generalize beyond this sample region/period, or is external validity an open question the discussion needs to address?"
+
+**Referee-pool weights.**
+- CREDIBILITY: 0.30
+- POLICY: 0.25
+- MEASUREMENT: 0.20
+- STRUCTURAL: 0.10
+- SKEPTIC: 0.10
+- THEORY: 0.05
+
+**Table format override.** Significance stars **allowed** (unlike AEA journals) — typical floor `* p<0.10, ** p<0.05, *** p<0.01`. SE in parentheses standard. Three-decimal point estimates. Cluster level should be stated explicitly in table notes; for spatial outcomes, Conley standard errors and the chosen bandwidth must be reported. Robust SEs (HC2 or HC3) standard for cross-section; for panel, clustered at the unit of treatment assignment.
+
+---
+
 ## Field adaptation
 
 The five profiles above are econ-specific. The **pipeline is field-agnostic** — nothing in `editor.md`, `domain-referee.md`, or `methods-referee.md` hard-codes economics. What varies by field is the journal profile.

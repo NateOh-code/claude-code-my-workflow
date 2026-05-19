@@ -66,6 +66,40 @@ Short reference cards naming each discipline's dominant paper-type frequencies, 
 
 ---
 
+## Environmental & Resource Economics (`env-econ`)
+
+A sub-field of economics with its own flagship journals (JEEM, REEP, JAERE, AEJ:EP, EER), distinctive methodological taste (climate / weather identification, non-market valuation, spatial standard errors), and an active dialogue with policy (IPCC, EPA, national climate adaptation plans). Inherits most econ conventions but differs from AEA outlets on significance-star formatting and from generalist econ on the salience of measurement (climate exposure variables, valuation techniques) and external validity (do estimates generalize across regions and warming scenarios?).
+
+**Paper-type frequencies (rough share of empirical work in JEEM / AEJ:EP / JAERE).**
+
+| Type | Share | Notes |
+|---|---|---|
+| Reduced-form | ~60% | Hedonic, panel, DiD, IV, RD, event study, long-difference. The dominant mode (Mendelsohn-style cross-sections, Schlenker-Roberts-style panels, Deschênes-Greenstone-style first-difference designs). |
+| Structural | ~15% | Climate-damage functions, integrated assessment (DICE/RICE/PAGE), spatial-equilibrium, dynamic resource extraction. |
+| Theory + empirics | ~10% | Theoretical model + empirical test (e.g., directed technical change for clean tech, Hotelling tests). |
+| Descriptive | ~10% | Measurement / data construction (new exposure indices, new valuation surveys, novel emissions accounting). |
+| Formal-theory | ~5% | Pure environmental theory (mechanism design for pollution, optimal taxation under uncertainty). Less common in field outlets. |
+
+**Dominant journals (shipped in `journal-profiles.md`).** JEEM (flagship), REEP (review-essay format, slightly different bar), JAERE (AERE's other journal), AEJ: Economic Policy (AEA outlet, no stars). Sometimes AER for breakthrough papers; Land Economics, Resource and Energy Economics, Climatic Change for narrower outlets.
+
+**Preregistration norms.**
+- **Field experiments:** rare in env-econ (mostly conservation interventions, payments for ecosystem services, behavioral nudges). When run, **AEA RCT Registry** (since 2018 mandate for AEA journals) or OSF.
+- **Observational / quasi-experimental:** dominant mode; preregistration uncommon. Pre-analysis plans appearing in applied-policy corners (e.g., cap-and-trade evaluations).
+- **Structural climate-damage models:** robustness across damage functions and discount rates is expected in lieu of a pre-analysis plan.
+- **Replication packages:** JEEM has a data-and-code availability policy aligned with AEA; AEJ:EP enforces the AEA Data Editor standard.
+
+**Method conventions.**
+- **Significance stars:** **allowed** at JEEM, REEP, JAERE, Land Economics (typical floor `* 0.10, ** 0.05, *** 0.01`). **Not allowed** at AEJ:EP (AEA policy since 2018). When dual-targeting, prepare both versions.
+- **Standard errors:** clustered at the unit of treatment assignment (county, state, weather station, watershed). **Conley spatial SEs** for outcomes with spatial dependence; report bandwidth. **Driscoll-Kraay** for panel with cross-sectional dependence. Robust HC2/HC3 for cross-section.
+- **Identification:** weather/climate identification debates (yearly-weather vs long-run-climate; degree days vs temperature bins; growing-season precipitation specification) are recurrent referee territory — anticipate them.
+- **Adaptation margin:** the central interpretive challenge for climate-impact estimates. Distinguish short-run damage (yearly weather), medium-run adaptation (multi-year), and long-run adapted value (cross-sectional or long-difference). Cite Burke-Emerick (2016) framing.
+- **Code language:** R and Stata both common; Python rising for spatial work. Pre-registration of analysis code (deposited at time of submission) is increasingly expected at JEEM.
+- **External validity:** the discussion section is expected to address whether the result generalizes across geographies, time periods, and warming scenarios. A JEEM paper that says nothing about external validity gets pushed back on.
+
+**Cross-references.** `methods-referee.md` paper types: reduced-form, structural, theory+empirics, descriptive, formal-theory (same labels as econ; weights re-tilted toward reduced-form per the frequency table above). `journal-profiles.md`: JEEM. Inherits from `econ` card for general econ conventions.
+
+---
+
 ## How skills consume these cards
 
 - **`/research-ideation`** — when the user names a topic without a discipline, the skill may infer one from context (citation style, vocabulary). The card supplies the default `paper_type` distribution to bias hypothesis generation.

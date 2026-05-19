@@ -1,0 +1,98 @@
+% =============================================================================
+% Paper/main.tex — Climate Change and Agriculture: Evidence from Farmland Transactions
+%
+% Target journal: Journal of Environmental Economics and Management (JEEM)
+%
+% Compile: from Paper/ run
+%     TEXINPUTS=../Preambles:$TEXINPUTS xelatex -interaction=nonstopmode main.tex
+%     BIBINPUTS=..:$BIBINPUTS bibtex main
+%     TEXINPUTS=../Preambles:$TEXINPUTS xelatex -interaction=nonstopmode main.tex
+%     TEXINPUTS=../Preambles:$TEXINPUTS xelatex -interaction=nonstopmode main.tex
+%
+% Or use the /compile-latex skill, which performs the 3-pass cycle automatically.
+%
+% Switch to elsarticle (JEEM submission format) before submission:
+%     \documentclass[review,12pt,authoryear]{elsarticle}
+% and remove the article-class preamble below.
+% =============================================================================
+
+\documentclass[11pt]{article}
+
+% Page geometry — generous margins for working drafts; tighten at submission.
+\usepackage[margin=1in]{geometry}
+\usepackage{setspace}\doublespacing
+\usepackage{microtype}
+
+% Shared palette + math + tikz/booktabs from project preamble. Loads under
+% xelatex without inputenc warnings; defines primary-blue, primary-gold, etc.
+\input{header}
+
+% Bibliography
+\usepackage[round,authoryear]{natbib}
+\usepackage[capitalise]{cleveref}
+
+% Table / figure paths — Stata writes to ../Tables and ../Figures relative
+% to Paper/. Use \input{../Tables/...} and \includegraphics{../Figures/...}.
+
+\title{Climate Change and Agriculture: \\ {Evidence from Farmland Transactions}}
+\author{%
+  {[Author Name]} \\
+  {[YOUR INSTITUTION]}\thanks{Email: [email]. Thanks to \ldots. [Acknowledgments].}
+}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+\noindent
+[Abstract goes here — JEEM target length 150--250 words. Lead with the
+research question, identification strategy, headline magnitudes (in policy
+units), and one-sentence implication for adaptation policy.]
+\medskip
+
+\noindent\textbf{JEL codes:} Q15, Q54, Q57 \\
+\noindent\textbf{Keywords:} climate change; agriculture; farmland values;
+hedonic; Ricardian; adaptation
+\end{abstract}
+
+\bigskip
+
+% =============================================================================
+% Body — sections live in Paper/sections/ and are \input{}'d here as authored.
+% Empty for now; add as drafted. Keep \input{} calls in narrative order.
+% =============================================================================
+
+% \input{sections/01_introduction}
+% \input{sections/02_literature}
+% \input{sections/03_data}
+% \input{sections/04_empirical_strategy}
+% \input{sections/05_results}
+% \input{sections/06_robustness}
+% \input{sections/07_discussion}
+% \input{sections/08_conclusion}
+
+\section*{[Working skeleton]}
+This is a placeholder skeleton produced when the project was bootstrapped. The
+real sections will be authored into \texttt{Paper/sections/} and pulled in via
+\verb|\input{}| calls above.
+
+% =============================================================================
+% Bibliography
+% =============================================================================
+
+\bibliographystyle{aer}     % adjust to JEEM style before submission
+\bibliography{../Bibliography_base}
+
+% =============================================================================
+% Appendix
+% =============================================================================
+
+% \clearpage
+% \appendix
+% \input{appendix/A_additional_tables}
+% \input{appendix/B_data_details}
+% \input{appendix/C_robustness}
+
+\end{document}
